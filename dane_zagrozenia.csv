@@ -1,0 +1,11 @@
+id,typ_zagrozenia,czestotliwosc,intensywnosc,data_wykrycia,region,osoba_poszkodowana
+1,Atak typu X,10,7,2024-12-01,Europa,5
+2,Phishing,25,3,2024-12-02,Ameryka Północna,1
+3,Wirus,40,9,2024-12-03,Azja,10
+4,Atak typu Y,15,5,2024-12-04,Europa,2
+5,Phishing,30,4,2024-12-05,Ameryka Północna,3
+6,Wirus,50,8,2024-12-06,Azja,7
+7,Atak typu Z,12,6,2024-12-07,Europa,4
+8,Phishing,35,2,2024-12-08,Ameryka Północna,0
+9,Wirus,45,9,2024-12-09,Azja,12
+10,Atak typu X,20,7,2024-12-10,Europa,6
