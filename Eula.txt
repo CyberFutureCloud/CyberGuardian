@@ -1,0 +1,21 @@
+END USER LICENSE AGREEMENT (EULA)
+
+This End User License Agreement (the "Agreement") is a legal agreement between you (either an individual or a single entity) and [Future INC] for the use of the software product [CyberGuardian].
+
+1. GRANT OF LICENSE
+   [Future INC] grants you the following rights to use the software:
+   - You may install and use the software for personal, non-commercial purposes only.
+   
+2. RESTRICTIONS
+   - You may not modify, distribute, or sublicense the software.
+   - You may not reverse engineer, decompile, or disassemble the software.
+   
+3. NO WARRANTY
+   - The software is provided "as-is" without warranty of any kind.
+
+4. TERM AND TERMINATION
+   - This license is effective until terminated. You may terminate this license at any time by destroying the software.
+
+By using this software, you agree to the terms of this Agreement.
+
+If you do not agree to the terms of this Agreement, you must immediately uninstall and destroy the software.
