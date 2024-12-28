@@ -87,7 +87,7 @@ echo "{\"license_key\": \"$license_key\", \"language\": \"English\"}" > $config_
 
 # Pobranie bota
 # URL repozytorium GitHub
-bot_repo_url="https://github.com/CyberFutureCloud/CYBERBOT-GUARD.git"
+bot_repo_url="https://github.com/CyberFutureCloud/BOT-CYBG-1.git"
 
 # Ścieżka do katalogu, w którym repozytorium ma zostać sklonowane
 bot_destination="$config_dir/CyberGuardian"
