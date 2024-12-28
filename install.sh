@@ -86,12 +86,25 @@ echo "Zapisuję dane konfiguracyjne..."
 echo "{\"license_key\": \"$license_key\", \"language\": \"English\"}" > $config_dir/config.json
 
 # Pobranie bota
-bot_url="https://www.mediafire.com/file/88a2i857xrxhear/cyberguardian_bot.py/file"
-bots_url="https://www.mediafire.com/file/u1pthb5q6kg4dul/bots.py/file"
+# URL repozytorium GitHub
+bot_repo_url="https://github.com/CyberFutureCloud/CYBERBOT-GUARD.git"
+
+# Ścieżka do katalogu, w którym repozytorium ma zostać sklonowane
 bot_destination="$config_dir/CyberGuardian"
-bots_destination="$config_dir/CyberGuardian"
-download_file $bot_url $bot_destination
-download_file $bots_url $bots_destination
+
+# Klonowanie repozytorium z GitHub
+echo "Klonowanie repozytorium z $bot_repo_url..."
+git clone $bot_repo_url $bot_destination
+
+# Sprawdzanie statusu operacji
+if [ $? -ne 0 ]; then
+    echo "Błąd podczas klonowania repozytorium z GitHub."
+    exit 1
+fi
+
+echo "Repozytorium zostało pomyślnie sklonowane do: $bot_destination"
+
+cd $bot_destination
 
 # Sprawdzanie pliku bota przed uruchomieniem (opcjonalne)
 echo "Sprawdzam plik bota..."
