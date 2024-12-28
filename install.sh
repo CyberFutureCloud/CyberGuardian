@@ -27,22 +27,20 @@ for pkg in "${required_packages[@]}"; do
     fi
 done
 
-# Weryfikacja klucza licencyjnego i emaila
+# Weryfikacja klucza licencyjnego
 read -p "Wprowadź klucz licencyjny: " license_key
-read -p "Wprowadź swój email: " email
 
 SUPABASE_URL="https://qfsnfurfqvhychkmxlvl.supabase.co"
 SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmc25mdXJmcXZoeWNoa214bHZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUzMzY0OTIsImV4cCI6MjA1MDkxMjQ5Mn0.l14dBfHv1yW01VuRWViqOFlojOcLdVpfWCI92AuAbxI"
 
 verify_license_online() {
     key=$1
-    email=$2
 
     response=$(curl -s -X POST \
         -H "apikey: $SUPABASE_KEY" \
         -H "Authorization: Bearer $SUPABASE_KEY" \
         -H "Content-Type: application/json" \
-        -d '{"license_key": "'"$key"'", "email": "'"$email"'"}' \
+        -d '{"license_key": "'"$key"'"}' \
         "$SUPABASE_URL/rest/v1/rpc/verify_license")
 
     valid=$(echo "$response" | jq -r '.valid')
@@ -50,12 +48,12 @@ verify_license_online() {
         echo "Licencja zweryfikowana pomyślnie."
         return 0
     else
-        echo "Nieprawidłowy klucz licencyjny lub email."
+        echo "Nieprawidłowy klucz licencyjny."
         return 1
     fi
 }
 
-verify_license_online $license_key $email
+verify_license_online $license_key
 if [ $? -ne 0 ]; then
     exit 1
 fi
