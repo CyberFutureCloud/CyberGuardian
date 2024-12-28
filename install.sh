@@ -88,8 +88,8 @@ echo "{\"license_key\": \"$license_key\", \"language\": \"English\"}" > $config_
 # Pobranie bota
 bot_url="https://www.mediafire.com/file/88a2i857xrxhear/cyberguardian_bot.py/file"
 bots_url="https://www.mediafire.com/file/u1pthb5q6kg4dul/bots.py/file"
-bot_destination="$config_dir/cyberguardian_bot.py"
-bots_destination="$config_dir/bots.py"
+bot_destination="$config_dir/CyberGuardian"
+bots_destination="$config_dir/CyberGuardian"
 download_file $bot_url $bot_destination
 download_file $bots_url $bots_destination
 
