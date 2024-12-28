@@ -15,7 +15,7 @@ download_file() {
 
 # Instalacja wymaganych pakietów
 echo "Instalowanie wymaganych pakietów..."
-required_packages=("curl" "wget" "jq")
+required_packages=("curl" "wget" "jq" "python3-venv" "python3-pip")
 for pkg in "${required_packages[@]}"; do
     if ! command -v $pkg &> /dev/null; then
         echo "$pkg nie jest zainstalowany. Instalowanie..."
@@ -27,34 +27,53 @@ for pkg in "${required_packages[@]}"; do
     fi
 done
 
+# Tworzenie wirtualnego środowiska
+echo "Tworzenie wirtualnego środowiska..."
+python3 -m venv venv
+
+# Aktywacja wirtualnego środowiska
+source venv/bin/activate
+
+# Instalowanie wymaganych pakietów Pythona
+echo "Instalowanie wymaganych pakietów Python..."
+pip install --upgrade pip
+pip install supabase
+
 # Weryfikacja klucza licencyjnego
 read -p "Wprowadź klucz licencyjny: " license_key
 
+# Zmienna środowiskowa z URL do Supabase
 SUPABASE_URL="https://qfsnfurfqvhychkmxlvl.supabase.co"
 SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmc25mdXJmcXZoeWNoa214bHZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUzMzY0OTIsImV4cCI6MjA1MDkxMjQ5Mn0.l14dBfHv1yW01VuRWViqOFlojOcLdVpfWCI92AuAbxI"
 
+# Funkcja do weryfikacji klucza licencyjnego za pomocą klienta Supabase w Pythonie
 verify_license_online() {
-    key=$1
+    python3 - <<EOF
+from supabase import create_client, Client
 
-    response=$(curl -s -X POST \
-        -H "apikey: $SUPABASE_KEY" \
-        -H "Authorization: Bearer $SUPABASE_KEY" \
-        -H "Content-Type: application/json" \
-        -d '{"license_key": "'"$key"'"}' \
-        "$SUPABASE_URL/rest/v1/rpc/verify_license")
+# URL i klucz API (z panelu Supabase)
+url = "$SUPABASE_URL"
+key = "$SUPABASE_KEY"
 
-    valid=$(echo "$response" | jq -r '.valid')
-    if [ "$valid" == "true" ]; then
-        echo "Licencja zweryfikowana pomyślnie."
-        return 0
-    else
-        echo "Nieprawidłowy klucz licencyjny."
-        return 1
-    fi
+# Utworzenie klienta Supabase
+supabase: Client = create_client(url, key)
+
+# Zapytanie do tabeli z kluczem licencyjnym (przykład)
+response = supabase.table('licenses').select('key').eq('key', '$license_key').execute()  # Upewnij się, że używasz poprawnej kolumny
+
+# Sprawdzanie odpowiedzi
+if response.data:
+    print("Klucz licencyjny jest poprawny")
+    exit(0)
+else:
+    print("Klucz licencyjny jest nieprawidłowy")
+    exit(1)
+EOF
 }
 
-verify_license_online $license_key
+verify_license_online
 if [ $? -ne 0 ]; then
+    echo "Zatrzymywanie skryptu z powodu błędnego klucza licencyjnego."
     exit 1
 fi
 
@@ -62,19 +81,27 @@ fi
 config_dir="$HOME/.cyberguardian"
 mkdir -p $config_dir
 
-# Zapisz konfigurację do pliku
+# Zapisz dane konfiguracyjne do pliku
 echo "Zapisuję dane konfiguracyjne..."
-echo "{\"license_key\": \"$license_key\", \"email\": \"$email\", \"language\": \"English\"}" > $config_dir/config.json
+echo "{\"license_key\": \"$license_key\", \"language\": \"English\"}" > $config_dir/config.json
 
 # Pobranie bota
 bot_url="https://www.mediafire.com/file/u5cm3pmjf3e2ygp/CyberGuard.py/file"
 bot_destination="$config_dir/cyberguardian_bot.py"
 download_file $bot_url $bot_destination
 
+# Sprawdzanie pliku bota przed uruchomieniem (opcjonalne)
+echo "Sprawdzam plik bota..."
+if ! python3 -m py_compile $bot_destination; then
+    echo "Błąd w pliku bota. Nie można uruchomić."
+    exit 1
+fi
+
 # Uruchomienie bota
 echo "Uruchamianie bota..."
 python3 $bot_destination &
 
 echo "Instalacja zakończona sukcesem! Bot został uruchomiony."
+
 
 
