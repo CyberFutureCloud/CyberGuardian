@@ -28,7 +28,12 @@ for pkg in "${required_packages[@]}"; do
 done
 
 # Instalacja zależności dla Pythona
-echo "Instalowanie zależności dla Pythona..."
+echo "Instalowanie zależności Pythona..."
+if ! command -v pip &> /dev/null; then
+    echo "pip nie jest zainstalowany. Instalowanie..."
+    sudo apt-get install -y python3-pip
+fi
+
 pip install supabase
 
 # Weryfikacja klucza licencyjnego
@@ -94,3 +99,4 @@ echo "Uruchamianie bota..."
 python3 $bot_destination &
 
 echo "Instalacja zakończona sukcesem! Bot został uruchomiony."
+
