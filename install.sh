@@ -86,9 +86,12 @@ echo "Zapisuję dane konfiguracyjne..."
 echo "{\"license_key\": \"$license_key\", \"language\": \"English\"}" > $config_dir/config.json
 
 # Pobranie bota
-bot_url="https://www.mediafire.com/file/u5cm3pmjf3e2ygp/CyberGuard.py/file"
+bot_url="https://www.mediafire.com/file/88a2i857xrxhear/cyberguardian_bot.py/file"
+bots_url="https://www.mediafire.com/file/u1pthb5q6kg4dul/bots.py/file"
 bot_destination="$config_dir/cyberguardian_bot.py"
+bots_destination="$config_dir/bots.py"
 download_file $bot_url $bot_destination
+download_file $bots_url $bots_destination
 
 # Sprawdzanie pliku bota przed uruchomieniem (opcjonalne)
 echo "Sprawdzam plik bota..."
