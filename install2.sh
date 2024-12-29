@@ -135,16 +135,23 @@ echo "Repozytorium zostało pomyślnie sklonowane do: $bot_destination"
 
 cd $bot_destination
 
-# Sprawdzanie pliku bota przed uruchomieniem (opcjonalne)
+# Sprawdzanie pliku bota przed uruchomieniem
 echo "Sprawdzam plik bota..."
-if ! python3 -m py_compile $bot_destination; then
+main_bot_file="cyberguardian_bot.py"
+if [ ! -f "$main_bot_file" ]; then
+    echo "Błąd: Nie znaleziono głównego pliku bota ($main_bot_file)."
+    exit 1
+fi
+
+# Kompilacja pliku bota
+if ! python3 -m py_compile "$main_bot_file"; then
     echo "Błąd w pliku bota. Nie można uruchomić."
     exit 1
 fi
 
 # Uruchomienie bota
 echo "Uruchamianie bota..."
-python3 $bot_destination &
+python3 "$main_bot_file" &
 
 echo "Instalacja zakończona sukcesem! Bot został uruchomiony."
 
