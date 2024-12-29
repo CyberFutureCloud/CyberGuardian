@@ -154,6 +154,10 @@ fi
 # Uruchomienie bota
 echo "Uruchamianie bota..."
 python3 "$main_bot_file" &
+fi
+
+#uruchomienie botów 
+!start 
 
 echo "Instalacja zakończona sukcesem! Bot został uruchomiony."
 
