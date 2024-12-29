@@ -42,60 +42,72 @@ pip install requests
 # Wprowadzenie e-maila użytkownika
 read -p "Wprowadź e-mail przypisany do licencji: " user_email
 
-# Wprowadzenie klucza produktu
-read -p "Wprowadź Product Key: " product_key
+# Wprowadzenie kodu produktu
+read -p "Wprowadź kod produktu (Product Key): " product_key
 
 # Wprowadzenie klucza licencyjnego
-read -p "Wprowadź klucz licencyjny: " license_key
+read -p "Wprowadź klucz licencyjny (License Key): " license_key
 
 # Zmienna środowiskowa z URL do Payhip API
 PAYHIP_API_URL="https://payhip.com/api/v2/license/verify"
+
+# Klucz API (na stałe w skrypcie)
+API_KEY="prod_sk_DrFnK_31e3c894dcd73549cc47020ef10ed00f1c15a555"
 
 # Funkcja do weryfikacji klucza licencyjnego za pomocą API Payhip
 verify_license_online() {
     python3 - <<EOF
 import requests
+import json
 
 # URL API Payhip
 api_url = "$PAYHIP_API_URL"
-license_key = "$license_key"  # Wprowadź wprowadzony klucz licencyjny
-secret_key = "$product_key"  # Wprowadź wprowadzony klucz produktu
-user_email = "$user_email"  # Wprowadź wprowadzony adres e-mail
+api_key = "$API_KEY"  # Klucz API (predefiniowany)
+license_key = "$license_key"  # Klucz licencyjny
+product_key = "$product_key"  # Kod produktu
+user_email = "$user_email"  # Adres e-mail
 
-# Nagłówki zawierające klucz tajny produktu
+# Nagłówki zawierające klucz API
 headers = {
-    "product-secret-key": secret_key
+    "Authorization": f"Bearer {api_key}"
 }
 
-# Parametry zapytania (klucz licencyjny)
+# Parametry zapytania
 params = {
-    "license_key": license_key
+    "license_key": license_key,
+    "product_key": product_key
 }
 
 # Wysłanie zapytania GET do API
 response = requests.get(api_url, headers=headers, params=params)
 
-# Sprawdzenie odpowiedzi
-if response.status_code == 200:
-    data = response.json()
-    if "data" in data:
-        # Sprawdzenie, czy e-mail w odpowiedzi zgadza się z wprowadzonym
-        if data['data']['buyer_email'].lower() == user_email.lower():
-            print("Klucz licencyjny jest poprawny.")
-            print(f"Buyer Email: {data['data']['buyer_email']}")
-            print(f"License Key: {data['data']['license_key']}")
-            print(f"Product Key: {secret_key}")
-            print(f"Product Link: {data['data']['product_link']}")
-            print(f"Enabled: {data['data']['enabled']}")
-            exit(0)
+# Logowanie odpowiedzi dla diagnostyki
+try:
+    print(f"Status code: {response.status_code}")
+    print(f"Response: {response.text}")
+    if response.status_code == 200:
+        data = response.json()
+        if "data" in data:
+            # Sprawdzenie, czy e-mail w odpowiedzi zgadza się z wprowadzonym
+            if data['data']['buyer_email'].lower() == user_email.lower():
+                print("Klucz licencyjny jest poprawny.")
+                print(f"Buyer Email: {data['data']['buyer_email']}")
+                print(f"License Key: {data['data']['license_key']}")
+                print(f"Product Key: {product_key}")
+                print(f"Product Link: {data['data']['product_link']}")
+                print(f"Enabled: {data['data']['enabled']}")
+                exit(0)
+            else:
+                print("E-mail przypisany do tego klucza licencyjnego nie zgadza się z wprowadzonym e-mailem.")
+                exit(1)
         else:
-            print("E-mail przypisany do tego klucza licencyjnego nie zgadza się z wprowadzonym e-mailem.")
+            print("Nie znaleziono danych licencji w odpowiedzi.")
             exit(1)
     else:
-        print("Klucz licencyjny jest nieprawidłowy.")
+        print(f"Błąd weryfikacji: Status {response.status_code}")
         exit(1)
-else:
-    print(f"Błąd weryfikacji: {response.status_code}")
+except Exception as e:
+    print(f"Nieoczekiwany błąd: {e}")
     exit(1)
 EOF
 }
@@ -118,17 +130,12 @@ echo "Zapisuję dane konfiguracyjne..."
 echo "{\"license_key\": \"$license_key\", \"language\": \"English\"}" > $config_dir/config.json
 
 # Pobranie bota
-# URL repozytorium GitHub
 bot_repo_url="https://github.com/CyberFutureCloud/BOT-CYBG-1.git"
-
-# Ścieżka do katalogu, w którym repozytorium ma zostać sklonowane
 bot_destination="$config_dir/CyberGuardian"
 
-# Klonowanie repozytorium z GitHub
 echo "Klonowanie repozytorium z $bot_repo_url..."
 git clone $bot_repo_url $bot_destination
 
-# Sprawdzanie statusu operacji
 if [ $? -ne 0 ]; then
     echo "Błąd podczas klonowania repozytorium z GitHub."
     exit 1
@@ -138,9 +145,9 @@ echo "Repozytorium zostało pomyślnie sklonowane do: $bot_destination"
 
 cd $bot_destination
 
-# Sprawdzanie pliku bota przed uruchomieniem (opcjonalne)
+# Sprawdzanie pliku bota przed uruchomieniem
 echo "Sprawdzam plik bota..."
-main_bot_file="cyberguardian_bot.py"  # Zakładamy, że główny plik bota to cyberguardian_bot.py
+main_bot_file="cyberguardian_bot.py"
 if [ ! -f "$main_bot_file" ]; then
     echo "Błąd: Nie znaleziono głównego pliku bota ($main_bot_file)."
     exit 1
@@ -157,6 +164,7 @@ echo "Uruchamianie bota..."
 python3 "$main_bot_file" &
 
 echo "Instalacja zakończona sukcesem! Bot został uruchomiony."
+
 
 
 
