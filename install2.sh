@@ -158,6 +158,8 @@ fi
 
 #uruchomienie botów 
 !start 
+!set_license_key $license_key
+!info
 
 echo "Instalacja zakończona sukcesem! Bot został uruchomiony."
 
