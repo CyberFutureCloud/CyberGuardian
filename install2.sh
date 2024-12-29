@@ -38,6 +38,8 @@ source venv/bin/activate
 echo "Instalowanie wymaganych pakietów Python..."
 pip install --upgrade pip
 pip install requests
+pip install gitpython
+pip install --user gitpython
 
 # Wprowadzenie klucza licencyjnego
 read -p "Wprowadź klucz licencyjny: " license_key
