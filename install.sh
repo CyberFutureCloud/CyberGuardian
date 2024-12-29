@@ -37,17 +37,19 @@ source venv/bin/activate
 # Instalowanie wymaganych pakietów Pythona
 echo "Instalowanie wymaganych pakietów Python..."
 pip install --upgrade pip
-pip install supabase
+pip install requests
+
+# Wprowadzenie e-maila użytkownika
+read -p "Wprowadź e-mail przypisany do licencji: " user_email
+
+# Wprowadzenie klucza produktu
+read -p "Wprowadź Product Key: " product_key
 
 # Wprowadzenie klucza licencyjnego
 read -p "Wprowadź klucz licencyjny: " license_key
 
-# Wprowadzenie e-maila, na który jest przypisana licencja
-read -p "Wprowadź e-mail przypisany do licencji: " user_email
-
-# Zmienna środowiskowa z URL do Payhip API oraz klucz produktu
+# Zmienna środowiskowa z URL do Payhip API
 PAYHIP_API_URL="https://payhip.com/api/v2/license/verify"
-PRODUCT_SECRET_KEY="prod_sk_DrFnK_31e3c894dcd73549cc47020ef10ed00f1c15a555"
 
 # Funkcja do weryfikacji klucza licencyjnego za pomocą API Payhip
 verify_license_online() {
@@ -57,7 +59,7 @@ import requests
 # URL API Payhip
 api_url = "$PAYHIP_API_URL"
 license_key = "$license_key"  # Wprowadź wprowadzony klucz licencyjny
-secret_key = "$PRODUCT_SECRET_KEY"  # Twój klucz produktu
+secret_key = "$product_key"  # Wprowadź wprowadzony klucz produktu
 user_email = "$user_email"  # Wprowadź wprowadzony adres e-mail
 
 # Nagłówki zawierające klucz tajny produktu
@@ -82,6 +84,7 @@ if response.status_code == 200:
             print("Klucz licencyjny jest poprawny.")
             print(f"Buyer Email: {data['data']['buyer_email']}")
             print(f"License Key: {data['data']['license_key']}")
+            print(f"Product Key: {secret_key}")
             print(f"Product Link: {data['data']['product_link']}")
             print(f"Enabled: {data['data']['enabled']}")
             exit(0)
@@ -137,14 +140,21 @@ cd $bot_destination
 
 # Sprawdzanie pliku bota przed uruchomieniem (opcjonalne)
 echo "Sprawdzam plik bota..."
-if ! python3 -m py_compile $bot_destination; then
+main_bot_file="cyberguardian_bot.py"  # Zakładamy, że główny plik bota to cyberguardian_bot.py
+if [ ! -f "$main_bot_file" ]; then
+    echo "Błąd: Nie znaleziono głównego pliku bota ($main_bot_file)."
+    exit 1
+fi
+
+# Kompilacja pliku bota
+if ! python3 -m py_compile "$main_bot_file"; then
     echo "Błąd w pliku bota. Nie można uruchomić."
     exit 1
 fi
 
 # Uruchomienie bota
 echo "Uruchamianie bota..."
-python3 $bot_destination &
+python3 "$main_bot_file" &
 
 echo "Instalacja zakończona sukcesem! Bot został uruchomiony."
 
